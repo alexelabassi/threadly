@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f7f5" />
+    <meta
+      name="description"
+      content="A little curiosity. A fresh perspective. Threadly is a thoughtful space to share what’s on your mind."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Threadly — A space for your perspective</title>
+    <script>
+      try {
+        document.documentElement.classList.toggle(
+          'dark',
+          localStorage.getItem('threadly-theme') === 'dark' ||
+            (!localStorage.getItem('threadly-theme') &&
+              matchMedia('(prefers-color-scheme: dark)').matches),
+        );
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

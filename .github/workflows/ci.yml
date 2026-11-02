@@ -1,0 +1,43 @@
+name: Build and test
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: threadly_ci
+          POSTGRES_USER: threadly_ci
+          # Disposable CI database credential, never used outside this job.
+          POSTGRES_PASSWORD: threadly_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U threadly_ci -d threadly_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: dotnet restore Threadly.slnx
+      - run: dotnet build Threadly.slnx --no-restore
+      - run: dotnet test Threadly.slnx --no-build
+      - run: dotnet tool restore
+      - run: dotnet ef database update --project backend/Threadly.Api
+        env:
+          ConnectionStrings__DefaultConnection: Host=localhost;Database=threadly_ci;Username=threadly_ci;Password=threadly_ci
+      - run: dotnet format Threadly.slnx --verify-no-changes --no-restore
+      - run: npm --prefix frontend ci
+      - run: npm --prefix frontend run lint
+      - run: npm --prefix frontend run format:check
+      - run: npm --prefix frontend run build

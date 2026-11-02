@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=threadly;Username=threadly;Password=replace-with-a-local-password"
+  }
+}
